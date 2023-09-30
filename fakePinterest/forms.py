@@ -18,6 +18,5 @@ class FormCriarConta(FlaskForm):
 
     def validate_email(self,email):
         usuario = Usuario.query.filter_by(email=email.data).first()
-        # o primeiro email é o nome do campo email que tá na classe Usuario - o segundo email é a variável que preencheu no formulário
         if usuario:
             return ValidationError("E-mail já cadastrado. Faça login para continuar.")
