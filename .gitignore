@@ -1,5 +1,9 @@
 instance
 FakePinterestLayout
+criar_banco.py
+
+teste.py
+*.pyc
 
 
 # Byte-compiled / optimized / DLL files
