@@ -1,8 +1,10 @@
 from flask import render_template, url_for, redirect
 from fakePinterest import app, database, bcrypt
 from flask_login import login_required, login_user, logout_user, current_user
-from fakePinterest.forms import FormLogin, FormCriarConta
+from fakePinterest.forms import FormLogin, FormCriarConta, FormFoto
 from fakePinterest.models import Usuario, Foto
+import os
+from werkzeug.utils import secure_filename
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -31,14 +33,25 @@ def criarconta():
     return render_template("criarconta.html", form=form_criarconta)
 
 
-@app.route("/perfil/<id_usuario>")
+@app.route("/perfil/<id_usuario>", methods=["GET", "POST"])
 @login_required
 def perfil(id_usuario):
     if int(id_usuario) == int(current_user.id):
-        # mostrar o perfil dele
-        return render_template("perfil.html", usuario=current_user)
-    usuario = Usuario.query.get(int(id_usuario))
-    return render_template("perfil.html", usuario=usuario)
+        # perfil do usuário logado
+        form_foto = FormFoto()
+        if form_foto.validate_on_submit():
+            arquivo = form_foto.foto.data
+            nome_seguro = secure_filename(arquivo.filename)
+            caminho = os.path.join(os.path.abspath(os.path.dirname(__file__)),
+                              app.config["UPLOAD_FOLDER"], nome_seguro)
+            arquivo.save(caminho)
+            foto = Foto(imagem=nome_seguro, id_usuario=current_user.id)
+            database.session.add(foto)
+            database.session.commit()
+        return render_template("perfil.html", usuario=current_user, form=form_foto)
+    else:
+        usuario = Usuario.query.get(int(id_usuario))
+        return render_template("perfil.html", usuario=usuario, form=None)
 
 
 @app.route("/logout")
