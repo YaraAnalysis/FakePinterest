@@ -7,7 +7,12 @@ FakePinterest - Perfil {{ usuario }}
 
 {% block body %}
 <body>
-<h1>FakePinterest - Peril do usuário: {{ usuario }}</h1>
+<h1>FakePinterest - Peril do usuário: {{ usuario.username }}</h1>
 <a href="{{ url_for('logout') }}">Sair</a>
+
+{% for foto in usuario.fotos%}
+<img src="default.pnl">
+{% endfor %}
+
 </body>
 {% endblock %}
