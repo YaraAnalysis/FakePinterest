@@ -8,6 +8,10 @@ class FormLogin(FlaskForm):
     email = StringField("E-mail", validators=[DataRequired(), Email()])
     senha = PasswordField("Senha", validators=[DataRequired()])
     botao_confirmacao = SubmitField("Fazer login")
+    def validate_email(self,email):
+        usuario = Usuario.query.filter_by(email=email.data).first()
+        if not usuario:
+            raise ValidationError("Usuário inexistente, crie uma conta.")
 
 
 class FormCriarConta(FlaskForm):
@@ -17,11 +21,10 @@ class FormCriarConta(FlaskForm):
     confirmacao_senha = PasswordField("Confirmação de senha", validators=[DataRequired(), EqualTo("senha")])
     botao_confirmacao = SubmitField("Criar conta")
 
-
     def validate_email(self,email):
         usuario = Usuario.query.filter_by(email=email.data).first()
         if usuario:
-            return ValidationError("E-mail já cadastrado. Faça login para continuar.")
+            raise ValidationError("E-mail já cadastrado, faça login para continuar.")
 
 
 class FormFoto(FlaskForm):
